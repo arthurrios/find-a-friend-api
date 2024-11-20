@@ -1,5 +1,5 @@
-import fastify from "fastify"
-import { ZodError } from "zod"
+import fastify from 'fastify'
+import { ZodError } from 'zod'
 
 export const app = fastify()
 
