@@ -1,6 +1,7 @@
 import type { OrgsRepository } from '@/repositories/orgs-repository'
 import { hash } from 'bcryptjs'
-import { OrgAlreadyExistsError } from './erros/org-already-exists-error'
+import { OrgAlreadyExistsError } from './errors/org-already-exists-error'
+import type { Org } from '@prisma/client'
 
 interface RegisterServiceRequest {
   name: string
@@ -15,6 +16,10 @@ interface RegisterServiceRequest {
   street: string
   latitude: number
   longitude: number
+}
+
+interface RegisterServiceResponse {
+  org: Org
 }
 
 export class RegisterService {
@@ -35,7 +40,7 @@ export class RegisterService {
     street,
     latitude,
     longitude,
-  }: RegisterServiceRequest) {
+  }: RegisterServiceRequest): Promise<RegisterServiceResponse> {
     const passwordHash = await hash(password, 6)
 
     const orgWithSameEmail = await this.orgsRepository.findByEmail(email)
@@ -44,7 +49,7 @@ export class RegisterService {
       throw new OrgAlreadyExistsError()
     }
 
-    await this.orgsRepository.create({
+    const org = await this.orgsRepository.create({
       name,
       ownerName: owner_name,
       email,
@@ -58,5 +63,7 @@ export class RegisterService {
       latitude,
       longitude,
     })
+
+    return { org }
   }
 }
