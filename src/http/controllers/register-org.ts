@@ -1,9 +1,13 @@
-import { prisma } from '@/lib/prisma'
-import { hash } from 'bcryptjs'
+import { PrismaOrgsRepository } from '@/repositories/prisma/prisma-orgs-repository'
+import { OrgAlreadyExistsError } from '@/services/erros/org-already-exists-error'
+import { RegisterService } from '@/services/register-org'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
-export async function register(request: FastifyRequest, reply: FastifyReply) {
+export async function registerOrg(
+  request: FastifyRequest,
+  reply: FastifyReply,
+) {
   const registerOrgBodySchema = z.object({
     name: z.string(),
     owner_name: z.string(),
@@ -34,23 +38,16 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     longitude,
   } = registerOrgBodySchema.parse(request.body)
 
-  const passwordHash = await hash(password, 6)
+  try {
+    const prismaOrgsRepository = new PrismaOrgsRepository()
+    const registerService = new RegisterService(prismaOrgsRepository)
 
-  const orgWithSameEmail = await prisma.org.findUnique({
-    where: { email },
-  })
-
-  if (orgWithSameEmail) {
-    return reply.status(409).send({ message: 'Email already in use.' })
-  }
-
-  await prisma.org.create({
-    data: {
+    await registerService.execute({
       name,
-      ownerName: owner_name,
-      whatsapp,
+      owner_name,
       email,
-      passwordHash,
+      whatsapp,
+      password,
       cep,
       state,
       city,
@@ -58,8 +55,14 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
       street,
       latitude,
       longitude,
-    },
-  })
+    })
+  } catch (err) {
+    if (err instanceof OrgAlreadyExistsError) {
+      return reply.status(409).send({ message: err.message })
+    }
+
+    throw err
+  }
 
   reply.status(201).send()
 }
