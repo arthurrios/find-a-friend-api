@@ -1,5 +1,5 @@
 import type { OrgsRepository } from '@/repositories/orgs-repository'
-import { hash } from 'bcryptjs'
+import { hash } from 'bcrypt'
 import { OrgAlreadyExistsError } from './errors/org-already-exists-error'
 import type { Org } from '@prisma/client'
 

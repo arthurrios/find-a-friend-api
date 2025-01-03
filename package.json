@@ -2,6 +2,7 @@
   "name": "find-a-friend-api",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start:dev": "tsx watch src/server.ts",
@@ -20,6 +21,7 @@
   "license": "ISC",
   "devDependencies": {
     "@rocketseat/eslint-config": "2.2.2",
+    "@types/bcrypt": "5.0.2",
     "@types/bcryptjs": "2.4.6",
     "@types/node": "22.5.5",
     "@types/supertest": "6.0.2",
@@ -38,7 +40,7 @@
     "@fastify/jwt": "9.0.0",
     "@prisma/client": "6.1.0",
     "@vitest/coverage-v8": "2.1.8",
-    "bcryptjs": "2.4.3",
+    "bcrypt": "5.1.1",
     "dayjs": "1.11.13",
     "dotenv": "16.4.5",
     "fastify": "5.0.0",

@@ -1,7 +1,7 @@
 import type { OrgsRepository } from '@/repositories/orgs-repository'
-import { hash } from 'bcryptjs'
-import { OrgAlreadyExistsError } from './errors/org-already-exists-error'
 import type { Pet } from '@prisma/client'
+import { OrgNotFound } from './errors/org-does-not-exist-error'
+import type { PetsRepository } from '@/repositories/pets-repository'
 
 interface RegisterPetServiceRequest {
   name: string
@@ -19,47 +19,41 @@ interface RegisterPetServiceResponse {
 }
 
 export class RegisterPetService {
-  constructor(private orgsRepository: OrgsRepository) {
+  constructor(
+    private orgsRepository: OrgsRepository,
+    private petsRepository: PetsRepository,
+  ) {
     this.orgsRepository = orgsRepository
+    this.petsRepository = petsRepository
   }
 
   async execute({
     name,
-    owner_name,
-    email,
-    whatsapp,
-    password,
-    cep,
-    state,
-    city,
-    neighborhood,
-    street,
-    latitude,
-    longitude,
+    about,
+    age,
+    size,
+    energy_level,
+    independency_level,
+    environment,
+    org_id,
   }: RegisterPetServiceRequest): Promise<RegisterPetServiceResponse> {
-    const passwordHash = await hash(password, 6)
+    const org = await this.orgsRepository.findById(org_id)
 
-    const orgWithSameEmail = await this.orgsRepository.findByEmail(email)
-
-    if (orgWithSameEmail) {
-      throw new OrgAlreadyExistsError()
+    if (!org) {
+      throw new OrgNotFound()
     }
 
-    const org = await this.orgsRepository.create({
+    const pet = await this.petsRepository.create({
       name,
-      ownerName: owner_name,
-      email,
-      whatsapp,
-      passwordHash,
-      cep,
-      state,
-      city,
-      neighborhood,
-      street,
-      latitude,
-      longitude,
+      about,
+      age,
+      energyLevel: energy_level,
+      environment,
+      independencyLevel: independency_level,
+      size,
+      org_id,
     })
 
-    return { org }
+    return { pet }
   }
 }
