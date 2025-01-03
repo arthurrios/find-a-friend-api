@@ -3,7 +3,7 @@ import { InMemoryPetsRepository } from '@/repositories/in-memory/in-memory-pets-
 import { beforeEach, describe, expect, it } from 'vitest'
 import { RegisterPetService } from './register-pet'
 import { hash } from 'bcrypt'
-import { OrgNotFound } from './errors/org-does-not-exist-error'
+import { OrgNotFoundError } from './errors/org-not-found-error'
 
 describe('Register Pet Service', () => {
   let orgsRepository: InMemoryOrgsRepository
@@ -59,6 +59,6 @@ describe('Register Pet Service', () => {
         size: '4',
         org_id: 'non-existing-org-id',
       }),
-    ).rejects.toBeInstanceOf(OrgNotFound)
+    ).rejects.toBeInstanceOf(OrgNotFoundError)
   })
 })

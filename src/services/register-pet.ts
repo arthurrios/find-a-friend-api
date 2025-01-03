@@ -1,6 +1,6 @@
 import type { OrgsRepository } from '@/repositories/orgs-repository'
 import type { Pet } from '@prisma/client'
-import { OrgNotFound } from './errors/org-does-not-exist-error'
+import { OrgNotFoundError } from './errors/org-not-found-error'
 import type { PetsRepository } from '@/repositories/pets-repository'
 
 interface RegisterPetServiceRequest {
@@ -40,7 +40,7 @@ export class RegisterPetService {
     const org = await this.orgsRepository.findById(org_id)
 
     if (!org) {
-      throw new OrgNotFound()
+      throw new OrgNotFoundError()
     }
 
     const pet = await this.petsRepository.create({

@@ -5,15 +5,15 @@ import type { InMemoryOrgsRepository } from './in-memory-orgs-repository'
 export class InMemoryPetsRepository implements PetsRepository {
   public items: Pet[] = []
 
-  constructor(private orgsRepository: InMemoryOrgsRepository) {}
+  constructor(private orgsRepository?: InMemoryOrgsRepository) {}
 
   async findAllInCity(params: FindAllParams): Promise<Pet[]> {
-    const orgsByCity = this.orgsRepository.items.filter(
+    const orgsByCity = this.orgsRepository?.items.filter(
       (org) => org.city === params.city,
     )
 
     const pets = this.items
-      .filter((item) => orgsByCity.some((org) => org.id === item.org_id))
+      .filter((item) => orgsByCity?.some((org) => org.id === item.org_id))
       .filter((item) => (params.age ? item.age === params.age : true))
       .filter((item) => (params.size ? item.size === params.size : true))
       .filter((item) =>
