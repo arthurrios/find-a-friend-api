@@ -1,6 +1,5 @@
-import { PrismaOrgsRepository } from '@/repositories/prisma/prisma-orgs-repository'
-import { OrgAlreadyExistsError } from '@/services/erros/org-already-exists-error'
-import { RegisterService } from '@/services/register-org'
+import { OrgAlreadyExistsError } from '@/services/errors/org-already-exists-error'
+import { makeRegisterService } from '@/services/factories/make-register-service'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
@@ -39,8 +38,7 @@ export async function registerOrg(
   } = registerOrgBodySchema.parse(request.body)
 
   try {
-    const prismaOrgsRepository = new PrismaOrgsRepository()
-    const registerService = new RegisterService(prismaOrgsRepository)
+    const registerService = makeRegisterService()
 
     await registerService.execute({
       name,
