@@ -6,21 +6,24 @@ export async function fetchNearbyOrgs(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const fetchNearbyOrgsBodySchema = z.object({
-    userLatitude: z.number(),
-    userLongitude: z.number(),
-    radius: z.number().optional(),
+  const fetchNearbyOrgsQuerySchema = z.object({
+    latitude: z.coerce.number().refine((value) => {
+      return Math.abs(value) <= 90
+    }),
+    longitude: z.coerce.number().refine((value) => {
+      return Math.abs(value) <= 180
+    }),
+    radius: z.coerce.number(),
   })
 
-  const { userLatitude, userLongitude, radius } =
-    fetchNearbyOrgsBodySchema.parse(request.body)
+  const query = fetchNearbyOrgsQuerySchema.parse(request.query)
 
   const fetchNearbyOrgsService = makeFetchNearbyOrgsService()
 
   const { orgs } = await fetchNearbyOrgsService.execute({
-    userLatitude,
-    userLongitude,
-    radius,
+    userLatitude: query.latitude,
+    userLongitude: query.longitude,
+    radius: query.radius,
   })
 
   reply.status(200).send({ orgs })
