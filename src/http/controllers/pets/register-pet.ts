@@ -7,7 +7,7 @@ export async function registerPet(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const registerOrgBodySchema = z.object({
+  const registerPetBodySchema = z.object({
     name: z.string(),
     about: z.string(),
     age: z.string(),
@@ -17,7 +17,7 @@ export async function registerPet(
     environment: z.string(),
   })
 
-  const body = registerOrgBodySchema.parse(request.body)
+  const body = registerPetBodySchema.parse(request.body)
 
   await request.jwtVerify()
 
@@ -26,10 +26,11 @@ export async function registerPet(
   try {
     const registerPetService = makeRegisterPetService()
 
-    await registerPetService.execute({
+    const pet = await registerPetService.execute({
       ...body,
       org_id,
     })
+    reply.status(201).send(pet)
   } catch (err) {
     if (err instanceof OrgNotFoundError) {
       return reply.status(404).send({ message: err.message })
@@ -37,6 +38,4 @@ export async function registerPet(
 
     throw err
   }
-
-  reply.status(201).send()
 }

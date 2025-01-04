@@ -232,8 +232,6 @@ describe('Search Pets (e2e)', () => {
       environment: 'indoor',
     })
 
-    console.log(response.body)
-
     expect(response.status).toBe(200)
     expect(response.body.pets).toHaveLength(2)
   })
