@@ -5,6 +5,7 @@ import { getDistanceBetweenCoordinates } from '@/utils/get-distance-between-coor
 
 export class InMemoryOrgsRepository implements OrgsRepository {
   public items: Org[] = []
+
   async findManyNearby(params: FindManyNearbyParams): Promise<Org[]> {
     return this.items.filter((item) => {
       const distance = getDistanceBetweenCoordinates(

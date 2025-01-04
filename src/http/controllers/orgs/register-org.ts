@@ -11,9 +11,9 @@ export async function registerOrg(
     name: z.string(),
     owner_name: z.string(),
     email: z.string().email(),
-    whatsapp: z.string().min(11),
-    password: z.string().min(6),
-    cep: z.string().min(8),
+    whatsapp: z.string(),
+    password: z.string(),
+    cep: z.string(),
     state: z.string(),
     city: z.string(),
     neighborhood: z.string(),
@@ -22,45 +22,18 @@ export async function registerOrg(
     longitude: z.number(),
   })
 
-  const {
-    name,
-    owner_name,
-    email,
-    whatsapp,
-    password,
-    cep,
-    state,
-    city,
-    neighborhood,
-    street,
-    latitude,
-    longitude,
-  } = registerOrgBodySchema.parse(request.body)
+  const body = registerOrgBodySchema.parse(request.body)
 
   try {
     const registerService = makeRegisterService()
 
-    await registerService.execute({
-      name,
-      owner_name,
-      email,
-      whatsapp,
-      password,
-      cep,
-      state,
-      city,
-      neighborhood,
-      street,
-      latitude,
-      longitude,
-    })
+    const { org } = await registerService.execute(body)
+    return reply.status(201).send(org)
   } catch (err) {
     if (err instanceof OrgAlreadyExistsError) {
-      return reply.status(409).send({ message: err.message })
+      return reply.status(400).send({ message: err.message })
     }
 
     throw err
   }
-
-  reply.status(201).send()
 }
