@@ -2,6 +2,7 @@ import type { Org, Prisma } from '@prisma/client'
 import type { FindManyNearbyParams, OrgsRepository } from '../orgs-repository'
 import { Decimal } from '@prisma/client/runtime/library'
 import { getDistanceBetweenCoordinates } from '@/utils/get-distance-between-coordinates'
+import { randomUUID } from 'node:crypto'
 
 export class InMemoryOrgsRepository implements OrgsRepository {
   public items: Org[] = []
@@ -45,7 +46,7 @@ export class InMemoryOrgsRepository implements OrgsRepository {
 
   async create(data: Prisma.OrgUncheckedCreateInput) {
     const org = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       name: data.name,
       ownerName: data.ownerName,
       email: data.email,
