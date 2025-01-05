@@ -1,6 +1,6 @@
-# App
+# FindAFriend API
 
-FindAFriend API
+Esta API gerencia criação de ORGs, cadastro de pets e pesquisa destes em ORGs próximas.
 
 ### Regras da aplicação
 
